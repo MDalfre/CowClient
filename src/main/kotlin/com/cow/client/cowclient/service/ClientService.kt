@@ -14,11 +14,13 @@ class ClientService {
         val connectServer = ClientSocket().openConnectServer("211.43.146.215",44405)
 
         while (connectServer.isConnected){
+
             val serverIn: InputStream = connectServer.getInputStream()
             val byteArrayOutputStream = ByteArrayOutputStream()
             val read = ByteArray(1024)
-            var lengt: Int = serverIn.read(read)
-            byteArrayOutputStream.write(read,0,lengt)
+            var length: Int = serverIn.read(read)
+
+            byteArrayOutputStream.write(read,0,length)
 
             val readBytes = byteArrayOutputStream.toByteArray()
 
@@ -27,8 +29,6 @@ class ClientService {
                 stringBuilder.append(String.format("%02X ", b))
             }
             println("[Server] -> $stringBuilder")
-
-
         }
         connectServer.close()
 
