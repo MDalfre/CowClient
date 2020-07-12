@@ -1,6 +1,6 @@
 package com.cow.client.cowclient.service
 
-import com.cow.client.cowclient.connection.ClientSocket
+import com.cow.client.cowclient.connection.SocketConfig
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Service
 import java.io.ByteArrayOutputStream
@@ -11,7 +11,7 @@ class ClientService {
 
     @Bean
     fun mainThread() {
-        val connectServer = ClientSocket().openConnectServer("211.43.146.215",44405)
+        val connectServer = SocketConfig().openConnectServer("211.43.146.215",44405)
 
         while (connectServer.isConnected){
 

@@ -2,7 +2,7 @@ package com.cow.client.cowclient.connection
 
 import java.net.Socket
 
-class ClientSocket {
+class SocketConfig {
 
     fun openConnectServer(ip: String, cnPort: Int): Socket {
         println("Conectando ao servidor remoto ...")
