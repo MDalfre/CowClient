@@ -26,7 +26,9 @@ class ClientService(
     fun mainThread() {
 
         // --- Muonline Server
-        val connectServer: Socket = socketConfig.openConnectServer(connectServerIp,connectServerPort)
+        //val connectServer: Socket = socketConfig.openConnectServer(connectServerIp,connectServerPort)
+        val connectServer:Socket = socketConfig.openDebugServer()
+        val client2server: Socket = socketConfig.openClient2Server()
 
 
         println("[Iniciando login ConnectServer]")
@@ -37,11 +39,17 @@ class ClientService(
 
             // [] -- [X] -- [<]
             // --- Server Server ( recebe pacotes servidor )
-            sendReceive.serverReceive(connectServer)
+            val serverPackets = sendReceive.serverReceive(connectServer)
+
+            // --- Server Client
+            sendReceive.clientSend(client2server, serverPackets)
+
+            // --- Client Server
+            val clientPackets = sendReceive.clientReceive(client2server)
 
             // [] -- [>] -- [X]
             // --- Server Server ( envia pacotes servidor )
-            sendReceive.serverSend(connectServer, packets)
+            sendReceive.serverSend(connectServer, clientPackets)
 
         }
 

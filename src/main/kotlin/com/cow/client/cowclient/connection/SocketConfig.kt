@@ -11,7 +11,7 @@ class SocketConfig {
     }
 
     fun openDebugServer():Socket{
-        return Socket("127.0.0.1",44406).also { println("Connectado como debugServer") }
+        return Socket("192.168.0.102",44405).also { println("Connectado como debugServer") }
     }
 
     fun openClient2Server(): Socket{
