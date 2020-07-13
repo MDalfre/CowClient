@@ -1,39 +1,59 @@
 package com.cow.client.cowclient.service
 
 import com.cow.client.cowclient.connection.SocketConfig
+import com.cow.client.cowclient.packets.List
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Service
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
+import java.net.Socket
 
 @Service
-class ClientService {
+class ClientService(
+        @Value("\${connect.server.ip}")
+        val connectServerIp:String,
+        @Value("\${connect.server.port}")
+        val connectServerPort:Int,
+        @Value("\${game.server.ip}")
+        val gameServerIp:String,
+        @Value("\${game.server.port}")
+        val gameServerPort:Int
+) {
+
+    val socketConfig = SocketConfig()
+    val sendReceive = SendReceive()
 
     @Bean
     fun mainThread() {
-        val connectServer = SocketConfig().openConnectServer("211.43.146.215",44405)
 
-        while (connectServer.isConnected){
+        // --- Muonline Server
+        val connectServer: Socket = socketConfig.openConnectServer(connectServerIp,connectServerPort)
 
-            val serverIn: InputStream = connectServer.getInputStream()
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            val read = ByteArray(1024)
-            var length: Int = serverIn.read(read)
 
-            byteArrayOutputStream.write(read,0,length)
+        println("[Iniciando login ConnectServer]")
+        var connectServerlist = List().connectServerClient
 
-            val readBytes = byteArrayOutputStream.toByteArray()
 
-            val stringBuilder = StringBuilder()
-            for(b in readBytes){
-                stringBuilder.append(String.format("%02X ", b))
-            }
-            println("[Server] -> $stringBuilder")
+        for(packets in connectServerlist){
+
+            // [] -- [X] -- [<]
+            // --- Server Server ( recebe pacotes servidor )
+            sendReceive.serverReceive(connectServer)
+
+            // [] -- [>] -- [X]
+            // --- Server Server ( envia pacotes servidor )
+            sendReceive.serverSend(connectServer, packets)
+
         }
-        connectServer.close()
 
+        val gameServer: Socket = socketConfig.openGameServer(gameServerIp,gameServerPort)
+        println("[Iniciando login GameServer]")
+        val gameServerList = List().gameServerClient
 
-
+        for (packets in gameServerList){
+            sendReceive.serverReceive(gameServer)
+            sendReceive.serverSend(gameServer, packets)
+        }
     }
+
 
 }
