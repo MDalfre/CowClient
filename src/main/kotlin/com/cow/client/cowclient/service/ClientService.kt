@@ -1,5 +1,6 @@
 package com.cow.client.cowclient.service
 
+import com.cow.client.cowclient.commons.Indicator
 import com.cow.client.cowclient.connection.SocketConfig
 import com.cow.client.cowclient.packets.List
 import org.springframework.beans.factory.annotation.Value
@@ -16,7 +17,9 @@ class ClientService(
         @Value("\${game.server.ip}")
         val gameServerIp:String,
         @Value("\${game.server.port}")
-        val gameServerPort:Int
+        val gameServerPort:Int,
+        @Value("\${client.server.port}")
+        val clientPort: Int
 ) {
 
     val socketConfig = SocketConfig()
@@ -26,40 +29,26 @@ class ClientService(
     fun mainThread() {
 
         // --- Muonline Server
-        //val connectServer: Socket = socketConfig.openConnectServer(connectServerIp,connectServerPort)
-        val connectServer:Socket = socketConfig.openDebugServer()
-        val client2server: Socket = socketConfig.openClient2Server()
+        val client2server: Socket = socketConfig.openClient2Server(clientPort)
+        val connectServer: Socket = socketConfig.openConnectServer(gameServerIp,gameServerPort)
 
 
-        println("[Iniciando login ConnectServer]")
-        var connectServerlist = List().connectServerClient
-
-
-        for(packets in connectServerlist){
+        while(true){
 
             // [] -- [X] -- [<]
             // --- Server Server ( recebe pacotes servidor )
-            val serverPackets = sendReceive.serverReceive(connectServer)
+            val serverPackets = sendReceive.receive(connectServer,Indicator.Server, true)
 
             // --- Server Client
-            sendReceive.clientSend(client2server, serverPackets)
+            sendReceive.send(client2server, serverPackets, Indicator.Client, false)
 
             // --- Client Server
-            val clientPackets = sendReceive.clientReceive(client2server)
+            val clientPackets = sendReceive.receive(client2server,Indicator.Client, true)
 
             // [] -- [>] -- [X]
             // --- Server Server ( envia pacotes servidor )
-            sendReceive.serverSend(connectServer, clientPackets)
+            sendReceive.send(connectServer, clientPackets, Indicator.Server, false)
 
-        }
-
-        val gameServer: Socket = socketConfig.openGameServer(gameServerIp,gameServerPort)
-        println("[Iniciando login GameServer]")
-        val gameServerList = List().gameServerClient
-
-        for (packets in gameServerList){
-            sendReceive.serverReceive(gameServer)
-            sendReceive.serverSend(gameServer, packets)
         }
     }
 
