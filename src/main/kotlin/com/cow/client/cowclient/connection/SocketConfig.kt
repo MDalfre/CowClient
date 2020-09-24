@@ -6,7 +6,7 @@ import java.net.Socket
 class SocketConfig {
 
     fun openConnectServer(ip: String, cnPort: Int): Socket {
-        println("[System] Connecting to remote server ...")
+        println("[System] Connecting to remote server at $ip ...")
         return Socket(ip, cnPort).also { println("[System] Connected to $ip at port $cnPort") }
     }
 
@@ -16,7 +16,7 @@ class SocketConfig {
 
     fun openClient2Server(clPort: Int): Socket{
         println("[System] Waiting for connections at port $clPort")
-        return  ServerSocket(clPort).accept().also { println("[System] Client connected !") }
+        return  ServerSocket(clPort).accept().also { println("[System] Client connected ! -> ${it.inetAddress}") }
     }
 
     fun openGameServer(ip:String, cnPort: Int): Socket {

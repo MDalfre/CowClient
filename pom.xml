@@ -14,16 +14,26 @@
 	<name>cow-client</name>
 	<description>mmorpg spring client</description>
 
+
 	<properties>
 		<java.version>11</java.version>
 		<kotlin.version>1.3.72</kotlin.version>
 		<spring-cloud.version>Hoxton.SR6</spring-cloud.version>
+		<beagle_version>1.0.2</beagle_version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>bintray-zupit-repo</id>
+			<url>https://dl.bintray.com/zupit/repo</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-batch</artifactId>
+			<groupId>br.com.zup.beagle</groupId>
+			<artifactId>beagle-spring-starter</artifactId>
+			<version>${beagle_version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -64,24 +74,9 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.batch</groupId>
-			<artifactId>spring-batch-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+
 	</dependencies>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>

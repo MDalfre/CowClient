@@ -1,5 +1,6 @@
 package com.cow.client.cowclient.service
 
+import com.cow.client.cowclient.commons.ByteToHex
 import com.cow.client.cowclient.commons.Indicator
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -8,6 +9,8 @@ import java.net.Socket
 
 class SendReceive {
 
+    private var byteToHex = ByteToHex()
+    var packetNumber: Long = 0
 
     fun receive(connectServer: Socket, indicator: Indicator, log: Boolean): String {
 
@@ -17,22 +20,18 @@ class SendReceive {
             if (serverIn.available() == 0) {
                 break
             }
-            val byteArrayOutputStream = ByteArrayOutputStream()
             val read = ByteArray(8024)
-            var length: Int = serverIn.read(read)
-
+            val length: Int = serverIn.read(read)
+            val byteArrayOutputStream = ByteArrayOutputStream()
             byteArrayOutputStream.write(read, 0, length)
 
             val readBytes = byteArrayOutputStream.toByteArray()
-
-            val stringBuilder = StringBuilder()
-            for (b in readBytes) {
-                stringBuilder.append(String.format("%02X ", b))
-            }
+            val hexString = byteToHex.toHex(readBytes)
+            packetNumber++
             when (log) {
-                true -> println("[$indicator] -> $stringBuilder")
+                true -> println("[$indicator] [$packetNumber] -> $hexString")
             }
-            return stringBuilder.toString()
+            return hexString.toString()
         }
 
         return "empty"
